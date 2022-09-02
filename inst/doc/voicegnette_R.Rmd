@@ -1,0 +1,57 @@
+---
+title: '`voice` vignette - The R part'
+subtitle: 'version `r packageVersion("voice")`'
+author: 'Filipe J. Zabala'
+date: "`r format(Sys.time(), '%Y-%m-%d')`"
+# date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{`voice` vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+ini0 <- Sys.time()
+```
+
+## 0. Installation
+https://github.com/filipezabala/voice
+
+### Load packages and audio files
+```{r, message=FALSE, warning=FALSE}
+# packs
+library(voice)
+
+# get path to audio file
+path2wav <- list.files(system.file('extdata', package = 'wrassp'),
+                       pattern <- glob2rx('*.wav'), full.names = TRUE)
+```
+
+## 1. Extract features
+### Examples
+```{r}
+# minimal usage
+M <- extract_features(path2wav, verbose = FALSE)
+M
+```
+
+
+## 2. Tag
+```{r}
+# creating Extended synthetic data
+E <- dplyr::tibble(subject_id = c(1,1,1,2,2,2,3,3,3), wav_path = path2wav)
+E
+
+# minimal usage
+tag(E, verbose = FALSE)
+
+# canonical data
+tag(E, groupBy = 'subject_id', verbose = FALSE)
+```
