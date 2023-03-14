@@ -12,30 +12,42 @@
 
 <meta name="author" content="Filipe J. Zabala" />
 
-<meta name="date" content="2022-09-01" />
+<meta name="date" content="2023-03-14" />
 
-<title>voice vignette - The R part</title>
+<title>voice vignette</title>
 
-<script src="data:application/javascript;base64,Ly8gUGFuZG9jIDIuOSBhZGRzIGF0dHJpYnV0ZXMgb24gYm90aCBoZWFkZXIgYW5kIGRpdi4gV2UgcmVtb3ZlIHRoZSBmb3JtZXIgKHRvCi8vIGJlIGNvbXBhdGlibGUgd2l0aCB0aGUgYmVoYXZpb3Igb2YgUGFuZG9jIDwgMi44KS4KZG9jdW1lbnQuYWRkRXZlbnRMaXN0ZW5lcignRE9NQ29udGVudExvYWRlZCcsIGZ1bmN0aW9uKGUpIHsKICB2YXIgaHMgPSBkb2N1bWVudC5xdWVyeVNlbGVjdG9yQWxsKCJkaXYuc2VjdGlvbltjbGFzcyo9J2xldmVsJ10gPiA6Zmlyc3QtY2hpbGQiKTsKICB2YXIgaSwgaCwgYTsKICBmb3IgKGkgPSAwOyBpIDwgaHMubGVuZ3RoOyBpKyspIHsKICAgIGggPSBoc1tpXTsKICAgIGlmICghL15oWzEtNl0kL2kudGVzdChoLnRhZ05hbWUpKSBjb250aW51ZTsgIC8vIGl0IHNob3VsZCBiZSBhIGhlYWRlciBoMS1oNgogICAgYSA9IGguYXR0cmlidXRlczsKICAgIHdoaWxlIChhLmxlbmd0aCA+IDApIGgucmVtb3ZlQXR0cmlidXRlKGFbMF0ubmFtZSk7CiAgfQp9KTsK"></script>
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 
 <style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
 
 
 
 <style type="text/css">
-  code {
-    white-space: pre;
-  }
-  .sourceCode {
-    overflow: visible;
-  }
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
@@ -53,55 +65,54 @@ pre > code.sourceCode { white-space: pre-wrap; }
 pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
-  { counter-reset: source-line 0; }
+{ counter-reset: source-line 0; }
 pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
+{ position: relative; left: -4em; counter-increment: source-line; }
 pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
 div.sourceCode
-  {   }
+{ }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
 </style>
 <script>
 // apply pandoc div.sourceCode style to pre.sourceCode instead
@@ -135,7 +146,187 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
-<link rel="stylesheet" href="data:text/css,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" type="text/css" />
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
 
 
 
@@ -147,111 +338,175 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
-<h1 class="title toc-ignore"><code>voice</code> vignette - The R part</h1>
-<h3 class="subtitle">version 0.4.14</h3>
+<h1 class="title toc-ignore"><code>voice</code> vignette</h1>
+<h3 class="subtitle">version 0.4.17</h3>
 <h4 class="author">Filipe J. Zabala</h4>
-<h4 class="date">2022-09-01</h4>
+<h4 class="date">2023-03-14</h4>
 
 
 <div id="TOC">
 <ul>
-<li><a href="#installation">0. Installation</a>
+<li><a href="#installation" id="toc-installation">0. Installation</a>
 <ul>
-<li><a href="#load-packages-and-audio-files">Load packages and audio files</a></li>
+<li><a href="#minimal" id="toc-minimal">0.1 Minimal</a></li>
+<li><a href="#full" id="toc-full">0.2 Full</a></li>
 </ul></li>
-<li><a href="#extract-features">1. Extract features</a>
+<li><a href="#extract-features" id="toc-extract-features">1. Extract
+features</a>
 <ul>
-<li><a href="#examples">Examples</a></li>
+<li><a href="#get-path-to-audio-files" id="toc-get-path-to-audio-files">1.1 Get path to audio files</a></li>
+<li><a href="#minimal-usage" id="toc-minimal-usage">1.2 Minimal
+usage</a></li>
 </ul></li>
-<li><a href="#tag">2. Tag</a></li>
+<li><a href="#tag" id="toc-tag">2. Tag</a>
+<ul>
+<li><a href="#creating-synthetic-extended-data" id="toc-creating-synthetic-extended-data">2.1 Creating synthetic
+Extended data</a></li>
+<li><a href="#tagging-extended-data" id="toc-tagging-extended-data">2.2
+Tagging Extended data</a></li>
+<li><a href="#tagging-canonical-data" id="toc-tagging-canonical-data">2.3 Tagging Canonical data</a></li>
+</ul></li>
 </ul>
 </div>
 
 <div id="installation" class="section level2">
 <h2>0. Installation</h2>
-<p><a href="https://github.com/filipezabala/voice" class="uri">https://github.com/filipezabala/voice</a></p>
-<div id="load-packages-and-audio-files" class="section level3">
-<h3>Load packages and audio files</h3>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># packs</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(voice)</span>
+<div id="minimal" class="section level3">
+<h3>0.1 Minimal</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># CRAN (stable)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&#39;voice&#39;</span>, <span class="at">dep =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># get path to audio file</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>path2wav <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="fu">system.file</span>(<span class="st">&#39;extdata&#39;</span>, <span class="at">package =</span> <span class="st">&#39;wrassp&#39;</span>),</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                       pattern <span class="ot">&lt;-</span> <span class="fu">glob2rx</span>(<span class="st">&#39;*.wav&#39;</span>), <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Github (development)</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&#39;filipezabala/voice&#39;</span>)</span></code></pre></div>
+</div>
+<div id="full" class="section level3">
+<h3>0.2 Full</h3>
+<p><a href="https://github.com/filipezabala/voice" class="uri">https://github.com/filipezabala/voice</a></p>
 </div>
 </div>
 <div id="extract-features" class="section level2">
 <h2>1. Extract features</h2>
-<div id="examples" class="section level3">
-<h3>Examples</h3>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># minimal usage</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>M <span class="ot">&lt;-</span> <span class="fu">extract_features</span>(path2wav, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>M</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2,389 × 61</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;    slice…¹ slice…² wav_p…³    f0    f1    f2    f3    f4    f5    f6    f7    f8</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      &lt;int&gt;   &lt;int&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  1       1       1 /usr/l…    NA    NA  1863    NA  3087  4218  5233  6144  6643</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  2       2       2 /usr/l…    NA    NA  1863    NA  3179  4172  5259  6712    NA</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  3       3       3 /usr/l…    NA    NA  1933  3055  3731  4663  5658  6775    NA</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  4       4       4 /usr/l…    NA    NA  1777  2791  3712  4690  5657  6602  7771</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  5       5       5 /usr/l…    NA    NA  1710  2690  3536  4677  5653  6526    NA</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  6       6       6 /usr/l…    NA    NA  1794  2673  3560  4402  5119  6499    NA</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  7       7       7 /usr/l…    NA    NA  1873  2665  3640  4346  5164  6516    NA</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  8       8       8 /usr/l…    NA    NA  1932  2684  3550  4304  5190  6518    NA</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;  9       9       9 /usr/l…    NA   148  1960  2648  3248  3640  5214  6498  7668</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 10      10      10 /usr/l…    NA   202  1965  2650  3284  3664  5210  6497  7716</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with 2,379 more rows, 49 more variables: mfcc1 &lt;dbl&gt;, mfcc2 &lt;dbl&gt;,</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   mfcc3 &lt;dbl&gt;, mfcc4 &lt;dbl&gt;, mfcc5 &lt;dbl&gt;, mfcc6 &lt;dbl&gt;, mfcc7 &lt;dbl&gt;,</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   mfcc8 &lt;dbl&gt;, mfcc9 &lt;dbl&gt;, mfcc10 &lt;dbl&gt;, mfcc11 &lt;dbl&gt;, mfcc12 &lt;dbl&gt;,</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   df2 &lt;dbl&gt;, df3 &lt;dbl&gt;, df4 &lt;dbl&gt;, df5 &lt;dbl&gt;, df6 &lt;dbl&gt;, df7 &lt;dbl&gt;,</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   df8 &lt;dbl&gt;, pf1 &lt;dbl&gt;, pf2 &lt;dbl&gt;, pf3 &lt;dbl&gt;, pf4 &lt;dbl&gt;, pf5 &lt;dbl&gt;,</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   pf6 &lt;dbl&gt;, pf7 &lt;dbl&gt;, pf8 &lt;dbl&gt;, rf1 &lt;dbl&gt;, rf2 &lt;dbl&gt;, rf3 &lt;dbl&gt;,</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   rf4 &lt;dbl&gt;, rf5 &lt;dbl&gt;, rf6 &lt;dbl&gt;, rf7 &lt;dbl&gt;, rf8 &lt;dbl&gt;, rcf2 &lt;dbl&gt;, …</span></span></code></pre></div>
+<div id="get-path-to-audio-files" class="section level3">
+<h3>1.1 Get path to audio files</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>wavFiles <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="fu">system.file</span>(<span class="st">&#39;extdata&#39;</span>, <span class="at">package =</span> <span class="st">&#39;wrassp&#39;</span>),</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                       pattern <span class="ot">&lt;-</span> <span class="fu">glob2rx</span>(<span class="st">&#39;*.wav&#39;</span>), <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+</div>
+<div id="minimal-usage" class="section level3">
+<h3>1.2 Minimal usage</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>M <span class="ot">&lt;-</span> voice<span class="sc">::</span><span class="fu">extract_features</span>(wavFiles)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">glimpse</span>(M)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Rows: 2,389</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; Columns: 61</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ slice_seq      &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, …</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ slice_seq_file &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, …</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ wav_path       &lt;chr&gt; &quot;/Library/Frameworks/R.framework/Versions/4.2/Resources…</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ f0             &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ f1             &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, 148, 202, 230, 275, 257…</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ f2             &lt;int&gt; 1863, 1863, 1933, 1777, 1710, 1794, 1873, 1932, 1960, 1…</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ f3             &lt;int&gt; NA, NA, 3055, 2791, 2690, 2673, 2665, 2684, 2648, 2650,…</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ f4             &lt;int&gt; 3087, 3179, 3731, 3712, 3536, 3560, 3640, 3550, 3248, 3…</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ f5             &lt;int&gt; 4218, 4172, 4663, 4690, 4677, 4402, 4346, 4304, 3640, 3…</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ f6             &lt;int&gt; 5233, 5259, 5658, 5657, 5653, 5119, 5164, 5190, 5214, 5…</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ f7             &lt;int&gt; 6144, 6712, 6775, 6602, 6526, 6499, 6516, 6518, 6498, 6…</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ f8             &lt;int&gt; 6643, NA, NA, 7771, NA, NA, NA, NA, 7668, 7716, 7761, 7…</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ mfcc1          &lt;dbl&gt; 14.46298, 12.94247, 14.22299, 13.19834, 17.98880, 24.37…</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ mfcc2          &lt;dbl&gt; -7.1138399, -7.1669199, -6.2983256, -5.0003665, -3.4425…</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ mfcc3          &lt;dbl&gt; 2.352871, 5.340259, 11.755288, 10.876895, 3.354877, -1.…</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ mfcc4          &lt;dbl&gt; 8.800427, 8.956796, 4.055546, 4.601487, 4.849539, 6.608…</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ mfcc5          &lt;dbl&gt; 6.24445537, 6.17439020, -4.75055084, -10.64988044, 5.00…</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ mfcc6          &lt;dbl&gt; -3.54648704, 8.74519469, 1.88442856, -3.12965952, -2.46…</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ mfcc7          &lt;dbl&gt; 0.7454124, -1.1902412, 4.2921135, 5.1290898, 1.6960854,…</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ mfcc8          &lt;dbl&gt; 5.8024789, -2.8018007, 8.5432876, 3.5423883, 5.3105704,…</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ mfcc9          &lt;dbl&gt; 9.9005380, 0.9505613, 5.7278759, -3.7637439, 0.9022304,…</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ mfcc10         &lt;dbl&gt; 5.7555321, -1.2284308, 8.3403469, 2.3632229, 4.5363183,…</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ mfcc11         &lt;dbl&gt; 4.0627807, -7.5980447, -1.9925100, -0.4887497, -6.78084…</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ mfcc12         &lt;dbl&gt; 10.860189567, -6.703157255, 4.458095379, -4.625375428, …</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ df2            &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, 1812, 1763, 1739, 1707,…</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ df3            &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, 1250.0, 1224.0, 1228.5,…</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ df4            &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, 1033.3333, 1027.3333, 1…</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ df5            &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, 873.00, 865.50, 871.50,…</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ df6            &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, 1013.2, 1001.6, 988.6, …</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ df7            &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, 1058.3333, 1049.1667, 1…</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ df8            &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, 1074.2857, 1073.4286, 1…</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ pf1            &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, -1.0576906, -0.9332809,…</span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ pf2            &lt;dbl&gt; 0.67827137, 0.67827137, 0.82452916, 0.49858323, 0.35859…</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ pf3            &lt;dbl&gt; 0.67827137, 0.67827137, 1.06164666, 0.56240678, 0.36376…</span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ pf4            &lt;dbl&gt; -0.24232089, -0.12634661, 0.86134004, 0.51254598, 0.232…</span></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ pf5            &lt;dbl&gt; -0.2964967, -0.2565957, 0.8162564, 0.5711316, 0.3529481…</span></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ pf6            &lt;dbl&gt; -0.29821515, -0.24926616, 0.84109636, 0.64441124, 0.467…</span></span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ pf7            &lt;dbl&gt; -0.35685214, 0.02079444, 0.91570602, 0.66588873, 0.4807…</span></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ pf8            &lt;dbl&gt; -0.57318395, 0.02079444, 0.91570602, 0.84969914, 0.4807…</span></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ rf1            &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ rf2            &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ rf3            &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ rf4            &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ rf5            &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ rf6            &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ rf7            &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ rf8            &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ rcf2           &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ rcf3           &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ rcf4           &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ rcf5           &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ rcf6           &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ rcf7           &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ rcf8           &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ rpf2           &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ rpf3           &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ rpf4           &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ rpf5           &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ rpf6           &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ rpf7           &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; $ rpf8           &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…</span></span></code></pre></div>
 </div>
 </div>
 <div id="tag" class="section level2">
 <h2>2. Tag</h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># creating Extended synthetic data</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>E <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">subject_id =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>), <span class="at">wav_path =</span> path2wav)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>E</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 9 × 2</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   subject_id wav_path                                               </span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        &lt;dbl&gt; &lt;chr&gt;                                                  </span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1          1 /usr/local/lib/R/site-library/wrassp/extdata/lbo001.wav</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2          1 /usr/local/lib/R/site-library/wrassp/extdata/lbo002.wav</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3          1 /usr/local/lib/R/site-library/wrassp/extdata/lbo003.wav</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4          2 /usr/local/lib/R/site-library/wrassp/extdata/lbo004.wav</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5          2 /usr/local/lib/R/site-library/wrassp/extdata/lbo005.wav</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6          2 /usr/local/lib/R/site-library/wrassp/extdata/lbo006.wav</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7          3 /usr/local/lib/R/site-library/wrassp/extdata/lbo007.wav</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 8          3 /usr/local/lib/R/site-library/wrassp/extdata/lbo008.wav</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 9          3 /usr/local/lib/R/site-library/wrassp/extdata/lbo009.wav</span></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co"># minimal usage</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="fu">tag</span>(E, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 9 × 7</span></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   wav_path                       f0_ta…¹ f0_ta…² f0_ta…³ f0_ta…⁴ f0_ta…⁵ f0_ta…⁶</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;                            &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 /usr/local/lib/R/site-library…    85.4    17.6   0.206    76.1    29.4    7.53</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 /usr/local/lib/R/site-library…    85.4    15.6   0.183    80.1    27.8   14.4 </span></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 /usr/local/lib/R/site-library…    84.6    13.0   0.154    78.8    23.9   14.0 </span></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 /usr/local/lib/R/site-library…    84.8    14.5   0.171    79.1    28.1   11.9 </span></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 /usr/local/lib/R/site-library…    86.0    14.7   0.170    78.7    30.0   11.0 </span></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 /usr/local/lib/R/site-library…    82.9    15.6   0.188    74.8    23.8    4.78</span></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7 /usr/local/lib/R/site-library…    78.2    16.2   0.207    73.5    13.4    6.82</span></span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 8 /usr/local/lib/R/site-library…    84.5    14.5   0.172    78.1    17.8    8.95</span></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 9 /usr/local/lib/R/site-library…    81.0    12.2   0.151    75.9    23.1    9.14</span></span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with abbreviated variable names ¹​f0_tag_mean, ²​f0_tag_sd, ³​f0_tag_vc,</span></span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ⁴​f0_tag_median, ⁵​f0_tag_iqr, ⁶​f0_tag_mad</span></span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="co"># canonical data</span></span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="fu">tag</span>(E, <span class="at">groupBy =</span> <span class="st">&#39;subject_id&#39;</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 × 7</span></span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   subject_id f0_tag_mean f0_tag_sd f0_tag_vc f0_tag_median f0_tag_iqr f0_tag_mad</span></span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;         &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;</span></span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1          1        85.1      15.3     0.180          78.3       26.8      11.9 </span></span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2          2        84.6      14.9     0.176          76.4       28.3       7.97</span></span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3          3        81.0      14.6     0.180          75.6       21.6       8.68</span></span></code></pre></div>
+<div id="creating-synthetic-extended-data" class="section level3">
+<h3>2.1 Creating synthetic Extended data</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>E <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">tibble</span>(<span class="at">subject_id =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">3</span>,<span class="dv">3</span>), <span class="at">wav_path =</span> wavFiles)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>E</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 9 × 2</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   subject_id wav_path                                                           </span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        &lt;dbl&gt; &lt;chr&gt;                                                              </span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1          1 /Library/Frameworks/R.framework/Versions/4.2/Resources/library/wra…</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2          1 /Library/Frameworks/R.framework/Versions/4.2/Resources/library/wra…</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3          1 /Library/Frameworks/R.framework/Versions/4.2/Resources/library/wra…</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4          2 /Library/Frameworks/R.framework/Versions/4.2/Resources/library/wra…</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5          2 /Library/Frameworks/R.framework/Versions/4.2/Resources/library/wra…</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6          2 /Library/Frameworks/R.framework/Versions/4.2/Resources/library/wra…</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7          3 /Library/Frameworks/R.framework/Versions/4.2/Resources/library/wra…</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 8          3 /Library/Frameworks/R.framework/Versions/4.2/Resources/library/wra…</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 9          3 /Library/Frameworks/R.framework/Versions/4.2/Resources/library/wra…</span></span></code></pre></div>
+</div>
+<div id="tagging-extended-data" class="section level3">
+<h3>2.2 Tagging Extended data</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>voice<span class="sc">::</span><span class="fu">tag</span>(E)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 9 × 7</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   wav_path                       f0_ta…¹ f0_ta…² f0_ta…³ f0_ta…⁴ f0_ta…⁵ f0_ta…⁶</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;                            &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1 /Library/Frameworks/R.framewo…    85.4    17.6   0.206    76.1    29.4    7.53</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2 /Library/Frameworks/R.framewo…    85.4    15.6   0.183    80.1    27.8   14.4 </span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3 /Library/Frameworks/R.framewo…    84.6    13.0   0.154    78.8    23.9   14.0 </span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 4 /Library/Frameworks/R.framewo…    84.8    14.5   0.171    79.1    28.1   11.9 </span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 5 /Library/Frameworks/R.framewo…    86.0    14.7   0.170    78.7    30.0   11.0 </span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 6 /Library/Frameworks/R.framewo…    82.9    15.6   0.188    74.8    23.8    4.78</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 7 /Library/Frameworks/R.framewo…    78.2    16.2   0.207    73.5    13.4    6.82</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 8 /Library/Frameworks/R.framewo…    84.5    14.5   0.172    78.1    17.8    8.95</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 9 /Library/Frameworks/R.framewo…    81.0    12.2   0.151    75.9    23.1    9.14</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # … with abbreviated variable names ¹​f0_tag_mean, ²​f0_tag_sd, ³​f0_tag_vc,</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; #   ⁴​f0_tag_median, ⁵​f0_tag_iqr, ⁶​f0_tag_mad</span></span></code></pre></div>
+</div>
+<div id="tagging-canonical-data" class="section level3">
+<h3>2.3 Tagging Canonical data</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>voice<span class="sc">::</span><span class="fu">tag</span>(E, <span class="at">groupBy =</span> <span class="st">&#39;subject_id&#39;</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 × 7</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   subject_id f0_tag_mean f0_tag_sd f0_tag_vc f0_tag_median f0_tag_iqr f0_tag_mad</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;        &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;         &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 1          1        85.1      15.3     0.180          78.3       26.8      11.9 </span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 2          2        84.6      14.9     0.176          76.4       28.3       7.97</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; 3          3        81.0      14.6     0.180          75.6       21.6       8.68</span></span></code></pre></div>
+</div>
 </div>
 
 

@@ -1,5 +1,5 @@
 ---
-title: '`voice` vignette - The R part'
+title: '`voice` vignette'
 subtitle: 'version `r packageVersion("voice")`'
 author: 'Filipe J. Zabala'
 date: "`r format(Sys.time(), '%Y-%m-%d')`"
@@ -22,36 +22,45 @@ ini0 <- Sys.time()
 ```
 
 ## 0. Installation
+### 0.1 Minimal
+```{r, message=FALSE, warning=FALSE, eval=FALSE}
+# CRAN (stable)
+install.packages('voice', dep = TRUE)
+
+# Github (development)
+devtools::install_github('filipezabala/voice')
+```
+
+### 0.2 Full
 https://github.com/filipezabala/voice
 
-### Load packages and audio files
-```{r, message=FALSE, warning=FALSE}
-# packs
-library(voice)
 
-# get path to audio file
-path2wav <- list.files(system.file('extdata', package = 'wrassp'),
+## 1. Extract features
+### 1.1 Get path to audio files
+```{r, message=FALSE, warning=FALSE}
+wavFiles <- list.files(system.file('extdata', package = 'wrassp'),
                        pattern <- glob2rx('*.wav'), full.names = TRUE)
 ```
 
-## 1. Extract features
-### Examples
-```{r}
-# minimal usage
-M <- extract_features(path2wav, verbose = FALSE)
-M
+### 1.2 Minimal usage
+```{r, message=FALSE, warning=FALSE}
+M <- voice::extract_features(wavFiles)
+dplyr::glimpse(M)
 ```
 
-
 ## 2. Tag
-```{r}
-# creating Extended synthetic data
-E <- dplyr::tibble(subject_id = c(1,1,1,2,2,2,3,3,3), wav_path = path2wav)
+### 2.1 Creating synthetic Extended data
+```{r, message=FALSE, warning=FALSE}
+E <- dplyr::tibble(subject_id = c(1,1,1,2,2,2,3,3,3), wav_path = wavFiles)
 E
+```
 
-# minimal usage
-tag(E, verbose = FALSE)
+### 2.2 Tagging Extended data
+```{r, message=FALSE, warning=FALSE}
+voice::tag(E)
+```
 
-# canonical data
-tag(E, groupBy = 'subject_id', verbose = FALSE)
+### 2.3 Tagging Canonical data
+```{r, message=FALSE, warning=FALSE}
+voice::tag(E, groupBy = 'subject_id')
 ```

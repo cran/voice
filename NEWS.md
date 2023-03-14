@@ -1,11 +1,55 @@
-## version 0.4.14
+## version 0.4.17
 
 ---
 
 ### NEWS.md setup
 
+- To appear in Version 0.4.18 YYYY-MM-DD
+. Add tag `$feature_tag_n`.
+. Features ordered by the listed order in `features` argument.
+. Add time duration `tdur` as a column at voice::tag function return.
+. Solve `acf` feature extraction at voice::extract_features.
+  . Error in `dplyr::bind_cols()`:
+  ! Can't recycle `..1` (size 2396) to match `..4` (size 0).
+  Run `rlang::last_error()` to see where the error occurred.
+. Solve @ voice::poetry.R 
+  FileNotFoundError: [Errno 2] No such file or directory: '/home/fz/.cache/torch/hub/pyannote_pyannote-audio_master/hubconf.py'
+. Change message @ voice::tag: 
+  FROM 'Warning: no non-missing arguments to min; returning InfError in features.list.temp$f0[[j]] : subscript out of bounds' 
+  TO 'File does not exist!'
 
-- Version 0.4.14
+
+- Version 0.4.17 2023-03-14
+. voice now depends of R (>= 4.0.0), not R (>= 4.1.0) in order to allow Kaggle installation.
+. Deprecated `poetry` (sent to `draft/poetry.R`), created `R/diarize` instead.
+. Deprecated `data/id_path.rda` and `man/id_path.Rd` (sent to `draft/id_path.rda` and `draft/id_path.Rd`), created `/data/mozilla_id_path.rda` and `man/mozilla_id_path.Rd` instead.
+. Updated .Rbuildignore:
+  ^.*\.Rproj$
+  ^\.Rproj\.user$
+  ^cran-comments\.md$
+  ^CRAN-SUBMISSION$
+  ^requirements.txt$
+  ^draft$
+  ^revdep$
+. rstudio.com became posit.co.
+. Monterey became Ventura.
+
+
+
+- Version 0.4.16 2022-09-14
+. Allow R/conv_df.R to use unitary `features` argument.
+
+
+- Version 0.4.15 2022-09-07
+. Removed duplicated 'must' from `autoDir` parameter documentation at poetry.R
+. Updated vignettes/voicegnette_R.Rmd.
+. Set `verbose = FALSE`:
+  - R/feat_summary.R
+  - R/tag.R
+. Set `to.data.frame = to.data.frame` to `cn.li` call @ R/conv_df.R.
+
+
+- Version 0.4.14 2022-09-02
 As suggested by Benjamin Altmann: 
 . Added `@return` to R/write_list.R. This implies adding a `\value` field to the corresponding .Rd file.
  
