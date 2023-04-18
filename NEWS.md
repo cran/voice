@@ -4,7 +4,7 @@
 
 ### NEWS.md setup
 
-- To appear in Version 0.4.18 YYYY-MM-DD
+- Version 0.5.0 2022-MM-DD
 . Add tag `$feature_tag_n`.
 . Features ordered by the listed order in `features` argument.
 . Add time duration `tdur` as a column at voice::tag function return.
@@ -12,11 +12,52 @@
   . Error in `dplyr::bind_cols()`:
   ! Can't recycle `..1` (size 2396) to match `..4` (size 0).
   Run `rlang::last_error()` to see where the error occurred.
-. Solve @ voice::poetry.R 
+. Solve @ voice::diarize.R 
   FileNotFoundError: [Errno 2] No such file or directory: '/home/fz/.cache/torch/hub/pyannote_pyannote-audio_master/hubconf.py'
 . Change message @ voice::tag: 
   FROM 'Warning: no non-missing arguments to min; returning InfError in features.list.temp$f0[[j]] : subscript out of bounds' 
   TO 'File does not exist!'
+
+
+
+- Version 0.4.20 2023-04-20
+. `filesRange` and `features` switched. Now `filesRange` is in the 3rd and `features` in the 2nd positions in the argument vector. This change impacts the examples of `interp_df.R`, `interp_mc.R`, `smooth_df.R`, `tag.R`.
+. `f0_praat`, ..., `f8_praat` implemented in `extract_features.R`.
+. `pycall = '~/miniconda3/envs/pyvoice38/bin/python3.8'` added as argument in `extract_features.R`.
+. `formants` set to `fmt` in `extract_features.R`.
+. `windowShift` set to `10` as default in `extract_features.R` and `feat_summary.R`.
+. `extract_features_py.R` deprecated.
+. `voice::conv` set to `voice::interp` at lines 45 and 50 of `interp_mc.R`.
+. Functions `get_` removed from `spltw.R`.
+. More information given in `voice::diarize` documentation.
+
+
+- Version 0.4.19 2023-04-06
+. All documentation verified.
+. `voice::conv` set to `voice::interp`.
+. `voice::conv_mc` set to `voice::interp_mc`.
+. `voice::conv_df` set to `voice::interp_df`.
+. `gender` set to `sex` as argument of `voice::extract_features`.
+. `gender` set to `sex` as argument of `voice::feat_summary`.
+. `gender` set to `sex` as argument of `voice::tag`.
+
+
+- Version 0.4.18 2023-04-05
+. Added `pycall` argument to `voice::extract_features_py`.
+. References updated in `voice::extract_features`.
+. References updated in `voice::extract_features_py`.
+. `F0` column inferred via `voice::extract_features_py` set to `f0_praat`. Line 39 of extract_f0.py, (`df_f0_long['f0_praat']`) and line 83 of extract_features_py.R (`dplyr::select(id, file_name, interval, F0) %>%`).
+. `1`,  column inferred via `voice::extract_features_py` set to `f0_praat`.
+. Column `mhs` set to `f0_mhs` in `voice::extract_features`.
+. Lean call to `voice::extract_features`:
+  `    features = c('f0', 'formants',   # Pitch and formants`
+  `                 'df', 'pf',         # Formant dispersion and position`
+  `                 'rf', 'rpf', 'rcf', # Formant removals`
+  `                 'rfc',              # (R)e(F)lection (C)oefficients`
+  `                 'mfcc'),            # (M)el (Frequency (C)epstral (C)oefficients`
+. RPf - Formant Position Removal by Zabala (2023) disentangled from Pf by Puts et al (2012) in `voice::extract_features`.
+. `voice::diarize` calls directly `pyannote.audio` via `reticulate` using a token. The download and call of `libs.py` and `diarization-pyannote.py` is no longer needed.
+. Reconnect to Github after 5 months.
 
 
 - Version 0.4.17 2023-03-14
@@ -33,6 +74,7 @@
   ^revdep$
 . rstudio.com became posit.co.
 . Monterey became Ventura.
+. `voice::diarize` exported to NAMESPACE.
 
 
 

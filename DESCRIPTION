@@ -1,8 +1,8 @@
 Package: voice
 Type: Package
 Title: Tools for Voice Analysis, Speaker Recognition and Mood Inference
-Version: 0.4.17
-Date: 2023-03-14
+Version: 0.4.20
+Date: 2023-04-20
 Authors@R: person("Zabala", "Filipe J.", email = "filipezabala@gmail.com", role = c("cre","aut"))
 Maintainer: Zabala Filipe J. <filipezabala@gmail.com>
 URL: https://github.com/filipezabala/voice
@@ -21,7 +21,7 @@ RoxygenNote: 7.2.3
 VignetteBuilder: knitr
 Language: en-US
 NeedsCompilation: no
-Packaged: 2023-03-14 18:38:03 UTC; fz
+Packaged: 2023-04-18 17:22:00 UTC; fz
 Author: Zabala Filipe J. [cre, aut]
 Repository: CRAN
-Date/Publication: 2023-03-14 19:10:02 UTC
+Date/Publication: 2023-04-18 19:20:02 UTC

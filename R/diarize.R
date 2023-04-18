@@ -1,26 +1,37 @@
 #' Who spoke when?
 #'
-#' Diarization from WAV audios using 'Python's' 'pyannote-audio' library.
+#' Diarization of WAV audios.
 #'
-#' @param fromWav A directory/folder containing WAV files.
-#' @param toRttm A directory/folder to write RTTM files. If the default \code{toRttm = NULL} is used, \code{'./voiceAudios/rttm'} is created and used.
+#' @param fromWav Either a file or a directory containing WAV files.
+#' @param toRttm A directory to write RTTM files. If the default \code{toRttm = NULL} is used, \code{'./voiceAudios/rttm'} is created and used.
 #' @param autoDir Logical. Must the directories tree be created? Default: \code{FALSE}. See 'Details'.
-#' @param pycall Python call.
+#' @param pycall Python call. See \url{https://github.com/filipezabala/voice} for details.
+#' @param token Access token needed to instantiate pretrained speaker diarization pipeline from pyannote.audio. #1. Visit \url{https://hf.co/pyannote/speaker-diarization} and accept user conditions. #2. Visit \url{https://hf.co/pyannote/segmentation} and accept user conditions. #3. Visit \url{https://hf.co/settings/tokens} to create an access token. More details at \url{https://github.com/pyannote/pyannote-audio}.
 #' @return RTTM files in NIST standard. See 'voice::read_rttm'.
 #' @details When \code{autoDir = TRUE}, the following directories are created: \code{'../mp3'},\code{'../rttm'}, \code{'../split'} and \code{'../musicxml'}. Use \code{getwd()} to find the parent directory \code{'../'}.
+#' @import reticulate
 #' @examples
 #' \dontrun{
 #' library(voice)
 #'
 #' wavDir <- list.files(system.file('extdata', package = 'wrassp'),
-#' pattern <- glob2rx('*.wav'), full.names = TRUE)
+#' pattern = glob2rx('*.wav'), full.names = TRUE)
 #'
-#' voice::diarize(fromWav = unique(dirname(wavDir)), toRttm = tempdir())
-#' dir(tempdir())
+#' voice::diarize(fromWav = unique(dirname(wavDir)),
+#' toRttm = tempdir(),
+#' token = NULL) # Must enter a token! See documentation.
+#'
+#' (rttm <- dir(tempdir(), '.[Rr][Tt][Tt][Mm]$', full.names = TRUE))
+#' file.info(rttm)
 #' }
 #' @export
 diarize <- function(fromWav, toRttm = NULL, autoDir = FALSE,
-                    pycall = '~/miniconda3/envs/pyvoice38/bin/python3.8'){
+                    pycall = '~/miniconda3/envs/pyvoice38/bin/python3.8',
+                    token = NULL){
+
+  if(is.null(token)){
+    stop('Must enter a token!')
+  }
 
   if(autoDir){
     wavDir <- fromWav[1]
@@ -42,26 +53,32 @@ diarize <- function(fromWav, toRttm = NULL, autoDir = FALSE,
     toRttm <- rttmDir
   }
 
-  # Melhoria: ordenar (por alguma regra) arquivos para extração
+  #TODO: sort (by some rule) files for extraction
 
   # process time
   pt0 <- proc.time()
   st0 <- Sys.time()
 
-  # getting python functions - MUST BE A BETTER WAY TO DO THIS!
-  unlink(paste0(getwd(),'/temp_libs.py'))
-  if(!file.exists(paste0(getwd(),'/temp_libs.py'))){
-    utils::download.file('https://raw.githubusercontent.com/filipezabala/voice/master/tests/libs.py',
-                         'temp_libs.py')
+  reticulate::use_condaenv(pycall, required = TRUE)
+  pyannote <- reticulate::import('pyannote.audio')
+  pipeline <- pyannote$Pipeline$from_pretrained('pyannote/speaker-diarization',
+                                                use_auth_token = token)
+
+  #TODO: solve 'with closing file handler' issue.
+
+  wavFiles <- dir(fromWav, '.[Ww][Aa][Vv]$', full.names = TRUE)
+
+  for(i in wavFiles){
+    diarization <- pipeline(i)
+    py <- reticulate::import_builtins()
+    rttmFile <- sub('.[Ww][Aa][Vv]$', '.rttm', i)
+    rttmBase <- basename(rttmFile)
+    rttmTo <- paste0(toRttm, '/', rttmBase)
+    # rttmTo <- normalizePath(paste0(toRttm, rttmBase))
+    f <- py$open(rttmTo, 'w')
+    diarization$write_rttm(f)
+    f$close()
   }
 
-  unlink(paste0(getwd(),'/temp_diarization-pyannote.py'))
-  if(!file.exists(paste0(getwd(),'/temp_diarization-pyannote.py'))){
-    utils::download.file('https://raw.githubusercontent.com/filipezabala/voice/master/tests/diarization-pyannote.py',
-                         'temp_diarization-pyannote.py')
-  }
-
-  cmd <- paste(pycall, '-m temp_diarization-pyannote --pathfrom', fromWav, '--pathto', toRttm)
-  system(cmd, wait = FALSE, intern = T)
   print(Sys.time()-st0)
 }

@@ -2,14 +2,14 @@
 % Please edit documentation in R/extract_features.R
 \name{extract_features}
 \alias{extract_features}
-\title{Extracts features from WAV audio files}
+\title{Extract audio features}
 \usage{
 extract_features(
   x,
+  features = c("f0", "fmt", "rf", "rpf", "rcf", "rfc", "mfcc"),
   filesRange = NULL,
-  features = c("f0", "formants", "mfcc", "df", "pf", "rf", "rcf", "rpf"),
-  gender = "u",
-  windowShift = 5,
+  sex = "u",
+  windowShift = 10,
   numFormants = 8,
   numcep = 12,
   dcttype = c("t2", "t1", "t3", "t4"),
@@ -24,49 +24,52 @@ extract_features(
   overwrite = FALSE,
   freq = 44100,
   round.to = NULL,
-  verbose = FALSE
+  verbose = FALSE,
+  pycall = "~/miniconda3/envs/pyvoice38/bin/python3.8"
 )
 }
 \arguments{
 \item{x}{A vector containing either files or directories of audio files in WAV format.}
 
-\item{filesRange}{The desired range of directory files (default: \code{NULL}, i.e., all files). Should only be used when all the WAV files are in the same folder.}
+\item{features}{Vector of features to be extracted. (Default: \code{'f0','fmt','rf','rcf','rpf','rfc','mfcc'}). The \code{'fmt_praat'} feature may take long time processing. The following features may contain a variable number of columns: \code{'cep'}, \code{'dft'}, \code{'css'} and \code{'lps'}.}
 
-\item{features}{Vector of features to be extracted. (default: 'f0','formants','mfcc','df','pf','rf','rcf','rpf'). The following features may contain a variable number of columns: \code{'cep'}, \code{'dft'}, \code{'css'} and \code{'lps'}.}
+\item{filesRange}{The desired range of directory files (Default: \code{NULL}, i.e., all files). Should only be used when all the WAV files are in the same folder.}
 
-\item{gender}{\code{= <code>} set gender specific parameters where <code> = \code{'f'}[emale], \code{'m'}[ale] or \code{'u'}[nknown] (default: \code{'u'}). Used by \code{wrassp::ksvF0}, \code{wrassp::forest} and \code{wrassp::mhsF0}.}
+\item{sex}{\code{= <code>} set sex specific parameters where <code> = \code{'f'}[emale], \code{'m'}[ale] or \code{'u'}[nknown] (Default: \code{'u'}). Used as 'gender' by \code{wrassp::ksvF0}, \code{wrassp::forest} and \code{wrassp::mhsF0}.}
 
-\item{windowShift}{\code{= <dur>} set analysis window shift to <dur>ation in ms (default: 5.0). Used by \code{wrassp::ksvF0}, \code{wrassp::forest}, \code{wrassp::mhsF0}, \code{wrassp::zcrana}, \code{wrassp::rfcana}, \code{wrassp::acfana}, \code{wrassp::cepstrum}, \code{wrassp::dftSpectrum}, \code{wrassp::cssSpectrum} and \code{wrassp::lpsSpectrum}.}
+\item{windowShift}{\code{= <dur>} set analysis window shift to <dur>ation in ms (Default: \code{5.0}). Used by \code{wrassp::ksvF0}, \code{wrassp::forest}, \code{wrassp::mhsF0}, \code{wrassp::zcrana}, \code{wrassp::rfcana}, \code{wrassp::acfana}, \code{wrassp::cepstrum}, \code{wrassp::dftSpectrum}, \code{wrassp::cssSpectrum} and \code{wrassp::lpsSpectrum}.}
 
-\item{numFormants}{\code{= <num>} <num>ber of formants (default: 8). Used by \code{wrassp::forest}.}
+\item{numFormants}{\code{= <num>} <num>ber of formants (Default: \code{8}). Used by \code{wrassp::forest}.}
 
-\item{numcep}{Number of Mel-frequency cepstral coefficients (cepstra) to return (default: 12). Used by \code{tuneR::melfcc}.}
+\item{numcep}{Number of Mel-frequency cepstral coefficients (cepstra) to return (Default: \code{12}). Used by \code{tuneR::melfcc}.}
 
-\item{dcttype}{Type of DCT used. \code{'t1'} or \code{'t2'}, \code{'t3'} for HTK \code{'t4'} for feacalc (default = \code{'t2'}). Used by \code{tuneR::melfcc}.}
+\item{dcttype}{Type of DCT used. \code{'t1'} or \code{'t2'}, \code{'t3'} for HTK \code{'t4'} for feacalc (Default: \code{'t2'}). Used by \code{tuneR::melfcc}.}
 
-\item{fbtype}{Auditory frequency scale to use: \code{'mel'}, \code{'bark'}, \code{'htkmel'}, \code{'fcmel'} (default: \code{'mel'}). Used by \code{tuneR::melfcc}.}
+\item{fbtype}{Auditory frequency scale to use: \code{'mel'}, \code{'bark'}, \code{'htkmel'}, \code{'fcmel'} (Default: \code{'mel'}). Used by \code{tuneR::melfcc}.}
 
-\item{resolution}{\code{= <freq>} set FFT length to the smallest value which results in a frequency resolution of <freq> Hz or better (default: 40.0). Used by \code{wrassp::cssSpectrum}, \code{wrassp::dftSpectrum} and \code{wrassp::lpsSpectrum}.}
+\item{resolution}{\code{= <freq>} set FFT length to the smallest value which results in a frequency resolution of <freq> Hz or better (Default: \code{40.0}). Used by \code{wrassp::cssSpectrum}, \code{wrassp::dftSpectrum} and \code{wrassp::lpsSpectrum}.}
 
-\item{usecmp}{Logical. Apply equal-loudness weighting and cube-root compression (PLP instead of LPC) (default: \code{FALSE}). Used by \code{tuneR::melfcc}.}
+\item{usecmp}{Logical. Apply equal-loudness weighting and cube-root compression (PLP instead of LPC) (Default: \code{FALSE}). Used by \code{tuneR::melfcc}.}
 
-\item{mc.cores}{Number of cores to be used in parallel processing. (default: \code{1})}
+\item{mc.cores}{Number of cores to be used in parallel processing. (Default: \code{1})}
 
-\item{full.names}{Logical. If \code{TRUE}, the directory path is prepended to the file names to give a relative file path. If \code{FALSE}, the file names (rather than paths) are returned. (default: \code{TRUE}) Used by \code{base::list.files}.}
+\item{full.names}{Logical. If \code{TRUE}, the directory path is prepended to the file names to give a relative file path. If \code{FALSE}, the file names (rather than paths) are returned. (Default: \code{TRUE}) Used by \code{base::list.files}.}
 
-\item{recursive}{Logical. Should the listing recursively into directories? (default: \code{FALSE}) Used by \code{base::list.files}.}
+\item{recursive}{Logical. Should the listing recursively into directories? (Default: \code{FALSE}) Used by \code{base::list.files}.}
 
-\item{check.mono}{Logical. Check if the WAV file is mono. (default: \code{TRUE})}
+\item{check.mono}{Logical. Check if the WAV file is mono. (Default: \code{TRUE})}
 
-\item{stereo2mono}{Logical. Should files be converted from stereo to mono? (default: \code{TRUE})}
+\item{stereo2mono}{(Experimental) Logical. Should files be converted from stereo to mono? (Default: \code{TRUE})}
 
-\item{overwrite}{Logical. Should converted files be overwritten? If not, the file gets the suffix \code{_mono}. (default: \code{FALSE})}
+\item{overwrite}{(Experimental) Logical. Should converted files be overwritten? If not, the file gets the suffix \code{_mono}. (Default: \code{FALSE})}
 
-\item{freq}{Frequency in Hz to write the converted files when \code{stereo2mono=TRUE}. (default: \code{44100})}
+\item{freq}{Frequency in Hz to write the converted files when \code{stereo2mono=TRUE}. (Default: \code{44100})}
 
-\item{round.to}{Number of decimal places to round to. (default: \code{NULL})}
+\item{round.to}{Number of decimal places to round to. (Default: \code{NULL})}
 
-\item{verbose}{Logical. Should the running status be showed? (default: \code{FALSE})}
+\item{verbose}{Logical. Should the running status be showed? (Default: \code{FALSE})}
+
+\item{pycall}{Python call. See \url{https://github.com/filipezabala/voice} for details.}
 }
 \value{
 A Media data frame containing the selected features.
@@ -75,14 +78,14 @@ A Media data frame containing the selected features.
 Extracts features from WAV audio files.
 }
 \details{
-When \code{features} 'df', 'pf', 'rf', 'rcf' or 'rpf' are selected, 'f0' and 'formants' must be selected. The feature 'df' corresponds to 'formant dispersion' (df2:df8) by Fitch (1997), 'pf' to formant position' (pf1:pf8) by Puts, Apicella & Cárdena (2011), 'rf' to 'formant removal' (rf1:rf8) by Zabala (2022), 'rcf' to 'formant cumulated removal' (rcf2:rcf8) by Zabala (2022) and 'rpf' to 'formant position removal' (rpf1:rpf8) by Zabala (2022).
+The feature 'df' corresponds to 'formant dispersion' (df2:df8) by Fitch (1997), 'pf' to formant position' (pf1:pf8) by Puts, Apicella & Cárdena (2011), 'rf' to 'formant removal' (rf1:rf8) by Zabala (2023), 'rcf' to 'formant cumulated removal' (rcf2:rcf8) by Zabala (2023) and 'rpf' to 'formant position removal' (rpf2:rpf8) by Zabala (2023).
 }
 \examples{
 library(voice)
 
 # get path to audio file
 path2wav <- list.files(system.file('extdata', package = 'wrassp'),
-pattern <- glob2rx('*.wav'), full.names = TRUE)
+pattern = glob2rx('*.wav'), full.names = TRUE)
 
 # minimal usage
 M1 <- extract_features(path2wav)
@@ -95,7 +98,31 @@ M3 <- extract_features(path2wav, filesRange = 3:6)
 table(basename(M3$wav_path))
 }
 \references{
-Fitch, W.T. (1997) Vocal tract length and formant frequency dispersion correlate with body size in rhesus macaques. J. Acoust. Soc. Am. 102, 1213 – 1222. (\doi{10.1121/1.421048})
+Levinson N. (1946). The Wiener (root mean square) error criterion in filter design and prediction. Journal of Mathematics and Physics, 25(1-4), 261–278. (\doi{10.1002/SAPM1946251261})
 
-Puts, D.A., Apicella, C.L., Cardenas, R.A. (2012) Masculine voices signal men's threat potential in forager and industrial societies. Proc. R. Soc. B Biol. Sci. 279, 601–609. (\doi{10.1098/rspb.2011.0829})
+Durbin J. (1960). “The fitting of time-series models.” Revue de l’Institut International de Statistique, pp. 233–244. (\url{https://www.jstor.org/stable/1401322})
+
+Cooley J.W., Tukey J.W. (1965). “An algorithm for the machine calculation of complex Fourier series.” Mathematics of computation, 19(90), 297–301. (\url{https://www.ams.org/journals/mcom/1965-19-090/S0025-5718-1965-0178586-1/})
+
+Wasson D., Donaldson R. (1975). “Speech amplitude and zero crossings for automated identification of human speakers.” IEEE Transactions on Acoustics, Speech, and Signal Processing, 23(4), 390–392. (\url{https://ieeexplore.ieee.org/document/1162690})
+
+Allen J. (1977). “Short term spectral analysis, synthesis, and modification by discrete Fourier transform.” IEEE Transactions on Acoustics, Speech, and Signal Processing, 25(3), 235– 238. (\url{https://ieeexplore.ieee.org/document/1162950})
+
+Schäfer-Vincent K. (1982). "Significant points: Pitch period detection as a problem of segmentation." Phonetica, 39(4-5), 241–253. (\doi{10.1159/000261665} )
+
+Schäfer-Vincent K. (1983). "Pitch period detection and chaining: Method and evaluation." Phonetica, 40(3), 177–202. (\doi{10.1159/000261691})
+
+Ephraim Y., Malah D. (1984). “Speech enhancement using a minimum-mean square error short-time spectral amplitude estimator.” IEEE Transactions on acoustics, speech, and signal processing, 32(6), 1109–1121. (\url{https://ieeexplore.ieee.org/document/1164453})
+
+Delsarte P., Genin Y. (1986). “The split Levinson algorithm.” IEEE transactions on acoustics, speech, and signal processing, 34(3), 470–478. (\url{https://ieeexplore.ieee.org/document/1164830})
+
+Jackson J.C. (1995). "The Harmonic Sieve: A Novel Application of Fourier Analysis to Machine Learning Theory and Practice." Technical report, Carnegie-Mellon University Pittsburgh PA Schoo; of Computer Science. (\url{https://apps.dtic.mil/sti/pdfs/ADA303368.pdf})
+
+Fitch, W.T. (1997) "Vocal tract length and formant frequency dispersion correlate with body size in rhesus macaques." J. Acoust. Soc. Am. 102, 1213 – 1222. (\doi{10.1121/1.421048})
+
+Boersma P., van Heuven V. (2001). Praat, a system for doing phonetics by computer. Glot. Int., 5(9/10), 341–347. (\url{https://www.fon.hum.uva.nl/paul/papers/speakUnspeakPraat_glot2001.pdf})
+
+Ellis DPW (2005). “PLP and RASTA (and MFCC, and inversion) in Matlab.” Online web resource. (\url{https://www.ee.columbia.edu/~dpwe/resources/matlab/rastamat/})
+
+Puts, D.A., Apicella, C.L., Cardenas, R.A. (2012) "Masculine voices signal men's threat potential in forager and industrial societies." Proc. R. Soc. B Biol. Sci. 279, 601–609. (\doi{10.1098/rspb.2011.0829})
 }

@@ -1,33 +1,37 @@
-#'  Split Wave
+#' Split Wave
 #'
 #' @description Split WAV files either in \code{fromWav} directory or using (same names) RTTM files/subdirectories as guidance.
-#' @param fromWav Either WAV file or directory/folder containing WAV files.
-#' @param fromRttm Either RTTM file or directory/folder containing RTTM files. Default: \code{NULL}.
-#' @param toSplit A directory/folder to write generated files. Default: \code{NULL}.
+#' @param fromWav Either WAV file or directory containing WAV files.
+#' @param fromRttm Either RTTM file or directory containing RTTM files. Default: \code{NULL}.
+#' @param toSplit A directory to write generated files. Default: \code{NULL}.
 #' @param autoDir Logical. Must the directories tree be created? Default: \code{FALSE}. See 'Details'.
 #' @param subDir Logical. Must the splitted files be placed in subdirectories? Default: \code{FALSE}.
-#' @param output character string, the class of the object to return, either 'wave' or 'list'.
+#' @param output Character string, the class of the object to return, either 'wave' or 'list'.
 #' @param filesRange The desired range of directory files (default: \code{NULL}, i.e., all files). Must be TRUE only if \code{fromWav} is a directory.
 #' @param full.names Logical. If \code{TRUE}, the directory path is prepended to the file names to give a relative file path. If \code{FALSE}, the file names (rather than paths) are returned. (default: \code{TRUE}) Used by \code{base::list.files}.
 #' @param recursive Logical. Should the listing recursively into directories? (default: \code{FALSE}) Used by \code{base::list.files}. Inactive if \code{fromWav} is a file.
 #' @param silence.gap The silence gap (in seconds) between adjacent words in a keyword. Rows with \code{tdur <= silence.gap} are removed. (default: \code{0.5})
-#' @return Split audio files according to the correspondent RTTM file(s). See '\code{voice::poetry}'.
+#' @return Splited audio files according to the correspondent RTTM file(s). See '\code{voice::diarize}'.
 #' @details When \code{autoDir = TRUE}, the following directories are created: \code{'../mp3'},\code{'../rttm'}, \code{'../split'} and \code{'../musicxml'}. Use \code{getwd()} to find the parent directory \code{'../'}.
 #' @examples
 #' \dontrun{
 #' library(voice)
 #'
-#' wavDir <- list.files(system.file('extdata', package = 'wrassp'),
-#'                      pattern <- glob2rx('*.wav'), full.names = TRUE)
-#' splitDir <- paste0(tempdir(), '/split')
-#' voice::poetry(fromWav = unique(dirname(wavDir)), toRttm = tempdir())
-#' dir.create(splitDir)
-#' dir(tempdir())
+#' urlWav <- 'https://raw.githubusercontent.com/filipezabala/voiceAudios/main/wav/sherlock0.wav'
+#' destWav <- paste0(tempdir(), '/sherlock0.wav')
+#' download.file(urlWav, destfile = destWav)
 #'
-#' splitw(unique(dirname(wavDir)), fromRttm = tempdir(), toSplit = paste0(tempdir(), '/split'))
+#' urlRttm <- 'https://raw.githubusercontent.com/filipezabala/voiceAudios/main/rttm/sherlock0.rttm'
+#' destRttm <- paste0(tempdir(), '/sherlock0.rttm')
+#' download.file(urlRttm, destfile = destRttm)
+#'
+#' splitDir <- paste0(tempdir(), '/split')
+#' dir.create(splitDir)
+#' splitw(destWav, fromRttm = destRttm, toSplit = splitDir)
+#'
 #' dir(splitDir)
 #' }
-#'
+#' @seealso \code{voice::diarize}
 #' @export
 splitw <- function(fromWav,
                    fromRttm = NULL,
@@ -123,29 +127,9 @@ splitw <- function(fromWav,
   }
   rttm <- lapply(rttm, keep.row)
 
-  # useful functions (voice::get_...)
-  get_tbeg <- function(x){
-    return(x$tbeg)
-  }
-  get_tdur <- function(x){
-    return(x$tdur)
-  }
-  get_left <- function(x){
-    return(x@left)
-  }
-  get_right <- function(x){
-    return(x@right)
-  }
-  get_samp.rate <- function(x){
-    return(x@samp.rate)
-  }
-  get_bit <- function(x){
-    return(x@bit)
-  }
-
   # time beginning, duration and ending
-  tbeg <- lapply(rttm, get_tbeg)
-  tdur <- lapply(rttm, get_tdur)
+  tbeg <- lapply(rttm, voice::get_tbeg)
+  tdur <- lapply(rttm, voice::get_tdur)
   tend <- Map('+', tbeg, tdur)
 
   # # tests
@@ -160,10 +144,10 @@ splitw <- function(fromWav,
   index <- lapply(nbreaks, seq, from = 2, by = 2)
 
   # audio information
-  freq <- sapply(audio, get_samp.rate)
-  # bit <- sapply(audio, get_bit)
-  # left <- lapply(audio, get_left)
-  # right <- lapply(audio, get_right)
+  freq <- sapply(audio, voice::get_samp.rate)
+  # bit <- sapply(audio, voice::get_bit)
+  # left <- lapply(audio, voice::get_left)
+  # right <- lapply(audio, voice::get_right)
   # totlen <- sapply(audio, length)
   # totsec <- totlen/freq
 
@@ -182,10 +166,10 @@ splitw <- function(fromWav,
   sa <- split.audio(x=audio, index=index, breaks=breaks, freq=freq)
 
   # splitted audio information
-  bitSpl <- lapply(unlist(sa), get_bit)
-  freqSpl <- lapply(unlist(sa), get_samp.rate)
-  leftSpl <- lapply(unlist(sa), get_left)
-  rightSpl <- lapply(unlist(sa), get_right)
+  bitSpl <- lapply(unlist(sa), voice::get_bit)
+  freqSpl <- lapply(unlist(sa), voice::get_samp.rate)
+  leftSpl <- lapply(unlist(sa), voice::get_left)
+  rightSpl <- lapply(unlist(sa), voice::get_right)
 
   # writing output as a list
   if(output == 'list'){

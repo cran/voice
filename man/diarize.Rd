@@ -8,23 +8,26 @@ diarize(
   fromWav,
   toRttm = NULL,
   autoDir = FALSE,
-  pycall = "~/miniconda3/envs/pyvoice38/bin/python3.8"
+  pycall = "~/miniconda3/envs/pyvoice38/bin/python3.8",
+  token = NULL
 )
 }
 \arguments{
-\item{fromWav}{A directory/folder containing WAV files.}
+\item{fromWav}{Either a file or a directory containing WAV files.}
 
-\item{toRttm}{A directory/folder to write RTTM files. If the default \code{toRttm = NULL} is used, \code{'./voiceAudios/rttm'} is created and used.}
+\item{toRttm}{A directory to write RTTM files. If the default \code{toRttm = NULL} is used, \code{'./voiceAudios/rttm'} is created and used.}
 
 \item{autoDir}{Logical. Must the directories tree be created? Default: \code{FALSE}. See 'Details'.}
 
-\item{pycall}{Python call.}
+\item{pycall}{Python call. See \url{https://github.com/filipezabala/voice} for details.}
+
+\item{token}{Access token needed to instantiate pretrained speaker diarization pipeline from pyannote.audio. #1. Visit \url{https://hf.co/pyannote/speaker-diarization} and accept user conditions. #2. Visit \url{https://hf.co/pyannote/segmentation} and accept user conditions. #3. Visit \url{https://hf.co/settings/tokens} to create an access token. More details at \url{https://github.com/pyannote/pyannote-audio}.}
 }
 \value{
 RTTM files in NIST standard. See 'voice::read_rttm'.
 }
 \description{
-Diarization from WAV audios using 'Python's' 'pyannote-audio' library.
+Diarization of WAV audios.
 }
 \details{
 When \code{autoDir = TRUE}, the following directories are created: \code{'../mp3'},\code{'../rttm'}, \code{'../split'} and \code{'../musicxml'}. Use \code{getwd()} to find the parent directory \code{'../'}.
@@ -34,9 +37,13 @@ When \code{autoDir = TRUE}, the following directories are created: \code{'../mp3
 library(voice)
 
 wavDir <- list.files(system.file('extdata', package = 'wrassp'),
-pattern <- glob2rx('*.wav'), full.names = TRUE)
+pattern = glob2rx('*.wav'), full.names = TRUE)
 
-voice::diarize(fromWav = unique(dirname(wavDir)), toRttm = tempdir())
-dir(tempdir())
+voice::diarize(fromWav = unique(dirname(wavDir)),
+toRttm = tempdir(),
+token = NULL) # Must enter a token! See documentation.
+
+(rttm <- dir(tempdir(), '.[Rr][Tt][Tt][Mm]$', full.names = TRUE))
+file.info(rttm)
 }
 }
