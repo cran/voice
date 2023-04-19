@@ -1,6 +1,6 @@
-b519783412b8e4eba909df23b1a51ba9 *DESCRIPTION
+a47b2d27803e5732bcbd39d0d1cc20ad *DESCRIPTION
 eff3ed89a36386191f10943ae9e14486 *NAMESPACE
-d2d07b11040b5b8edda3329fb5f2d4fd *NEWS.md
+3639888300766b5e63ad68d14547f08a *NEWS.md
 1cf569ab20231927b35fbfef1a24f73f *R/audio_time.R
 a9a7b78b1b7761e3b23dbe2a48d9e8f4 *R/diarize.R
 bdf8a263b85f96e26f07bcb90780a41d *R/duration.R
@@ -33,9 +33,9 @@ b6356b17a39dd47addbda487005739cd *R/utils-global.R
 0c6ad5b3446721162c89589e8077ab1c *build/partial.rdb
 59a88ddac77635708cc05bbca1ab0dd7 *build/vignette.rds
 3e65d47997c076b1ec6ab244eb89d7ca *data/mozilla_id_path.rda
-05aeb5757f617e3be5875e24511f0bbc *inst/doc/voicegnette_R.R
-216ecf6d0e6ec783edcdd6a1a033a058 *inst/doc/voicegnette_R.Rmd
-73c7587d6a9a83108c66e9f8ed1a7794 *inst/doc/voicegnette_R.html
+407ac6cb7cf16be074e4ac0b4edf18a5 *inst/doc/voicegnette_R.R
+5241c8b2b72600ccb1632cefadd4a862 *inst/doc/voicegnette_R.Rmd
+bc54450852e06fbf5f91f3ba66809b81 *inst/doc/voicegnette_R.html
 a99ce188ecd02139cb6327c1bd8785ae *man/audio_time.Rd
 8a63458fe9e8574e21aa8ab8a0633c41 *man/diarize.Rd
 7de8dacc2e327856028c53c070325208 *man/duration.Rd
@@ -75,5 +75,5 @@ ff0b6f4224a2adceec14ed21f67d6e1f *vignettes/musescore.png
 867b9199ca89d69aa82bf0a662f48866 *vignettes/rttm.png
 f7208015520171e08868190c847a53b3 *vignettes/split.png
 d8cf0ec6c7a04499765a6e349dcea9d4 *vignettes/test.WAV
-a48fbda6f9953b70507c6a4a3d3955f1 *vignettes/vignettes_old.zip
-216ecf6d0e6ec783edcdd6a1a033a058 *vignettes/voicegnette_R.Rmd
+85f679c0d2452d60e37b50109e25c30f *vignettes/vignettes_old.zip
+5241c8b2b72600ccb1632cefadd4a862 *vignettes/voicegnette_R.Rmd
