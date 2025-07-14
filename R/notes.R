@@ -8,7 +8,7 @@
 #' @return A vector containing the notes for equal-tempered scale, A4 = 440 Hz. When `method = 'spn'` the vector is of class 'ordered factor'. When `method = 'octave'` the vector is of class 'factor'.  When `method = 'midi'` the vector is of class 'integer'.
 #' @details The symbol '#' is being used to represent a sharp note, the higher
 #' in pitch by one semitone on Scientific Pitch Notation (SPN).
-#' @references \url{https://pages.mtu.edu/~suits/notefreqs.html}
+#' @references \url{https://gist.github.com/nvictor/7b4ab7070e210bc1306356f037226dd9}
 #' @seealso \code{notes_freq}
 #' @examples
 #' library(voice)
@@ -21,13 +21,15 @@ notes <- function(x, method = 'spn', moving.average = FALSE, k = 11){
     x <- zoo::rollmean(x, k)
   }
   x <- as.matrix(x)
-  freq <- voice::notes_freq()$freq
-  distance <- diff(freq)
-  lf <- length(freq)
-  freqhalf <- c(freq[1] - distance[1]/2,
-                freq[-lf] + distance/2,
-                freq[lf]+distance[lf-1]/2)
-  spn <- voice::notes_freq()$spn[findInterval(x, freqhalf)]
+  # freq <- voice::notes_freq()$freq
+  # distance <- diff(freq)
+  # lf <- length(freq)
+  # freqhalf <- c(freq[1] - distance[1]/2,
+  #               freq[-lf] + distance/2,
+  #               freq[lf]+distance[lf-1]/2)
+  freqs <- c(voice::notes_freq()$spn.lo,
+             voice::notes_freq()$spn.hi[108])
+  spn <- voice::notes_freq()$spn[findInterval(x, freqs)]
   if(method == 'spn'){
     return(spn)
   } else if(method == 'midi'){

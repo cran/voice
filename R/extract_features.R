@@ -1,7 +1,7 @@
 #' Extract audio features
 #' @description Extracts features from WAV audio files.
 #' @param x A vector containing either files or directories of audio files in WAV format.
-#' @param features Vector of features to be extracted. (Default: \code{'f0','fmt','rf','rcf','rpf','rfc','mfcc'}). The \code{'fmt_praat'} feature may take long time processing. The following features may contain a variable number of columns: \code{'cep'}, \code{'dft'}, \code{'css'} and \code{'lps'}.
+#' @param features Vector of features to be extracted. (Default: \code{'f0','fmt','gain'}). Available features: \code{'f0','f0_mhs','f0_praat','fmt','fmt_praat','zcr','rms','gain','rfc','ac','cep','dft','css','lps','mfcc','df','pf','rf','rcf','rpf'}.
 #' @param filesRange The desired range of directory files (Default: \code{NULL}, i.e., all files). Should only be used when all the WAV files are in the same folder.
 #' @param sex \code{= <code>} set sex specific parameters where <code> = \code{'f'}[emale], \code{'m'}[ale] or \code{'u'}[nknown] (Default: \code{'u'}). Used as 'gender' by \code{wrassp::ksvF0}, \code{wrassp::forest} and \code{wrassp::mhsF0}.
 #' @param windowShift \code{= <dur>} set analysis window shift to <dur>ation in ms (Default: \code{5.0}). Used by \code{wrassp::ksvF0}, \code{wrassp::forest}, \code{wrassp::mhsF0}, \code{wrassp::zcrana}, \code{wrassp::rfcana}, \code{wrassp::acfana}, \code{wrassp::cepstrum}, \code{wrassp::dftSpectrum}, \code{wrassp::cssSpectrum} and \code{wrassp::lpsSpectrum}.
@@ -22,7 +22,14 @@
 #' @param verbose Logical. Should the running status be showed? (Default: \code{FALSE})
 #' @param pycall Python call. See \url{https://github.com/filipezabala/voice} for details.
 #' @return A Media data frame containing the selected features.
-#' @details The feature 'df' corresponds to 'formant dispersion' (df2:df8) by Fitch (1997), 'pf' to formant position' (pf1:pf8) by Puts, Apicella & Cárdena (2011), 'rf' to 'formant removal' (rf1:rf8) by Zabala (2023), 'rcf' to 'formant cumulated removal' (rcf2:rcf8) by Zabala (2023) and 'rpf' to 'formant position removal' (rpf2:rpf8) by Zabala (2023).
+#' @details The feature 'df' corresponds to 'formant dispersion' (df2:df8) by
+#' Fitch (1997), 'pf' to formant position' (pf1:pf8) by Puts, Apicella & Cárdena
+#' (2011), 'rf' to 'formant removal' (rf1:rf8) by Zabala (2023), 'rcf' to
+#' 'formant cumulated removal' (rcf2:rcf8) by Zabala (2023) and 'rpf' to
+#' 'formant position removal' (rpf2:rpf8) by Zabala (2023).
+#' The \code{'fmt_praat'} feature may take long time processing. The following
+#' features may contain a variable number of columns: \code{'cep'}, \code{'dft'},
+#' \code{'css'} and \code{'lps'}.
 #' @references Levinson N. (1946). The Wiener (root mean square) error criterion in filter design and prediction. Journal of Mathematics and Physics, 25(1-4), 261–278. (\doi{10.1002/SAPM1946251261})
 #'
 #' Durbin J. (1960). “The fitting of time-series models.” Revue de l’Institut International de Statistique, pp. 233–244. (\url{https://www.jstor.org/stable/1401322})
@@ -41,13 +48,13 @@
 #'
 #' Delsarte P., Genin Y. (1986). “The split Levinson algorithm.” IEEE transactions on acoustics, speech, and signal processing, 34(3), 470–478. (\url{https://ieeexplore.ieee.org/document/1164830})
 #'
-#' Jackson J.C. (1995). "The Harmonic Sieve: A Novel Application of Fourier Analysis to Machine Learning Theory and Practice." Technical report, Carnegie-Mellon University Pittsburgh PA Schoo; of Computer Science. (\url{https://apps.dtic.mil/sti/pdfs/ADA303368.pdf})
+#' Jackson J.C. (1995). "The Harmonic Sieve: A Novel Application of Fourier Analysis to Machine Learning Theory and Practice." Technical report, Carnegie-Mellon University Pittsburgh PA Schoo; of Computer Science.
 #'
 #' Fitch, W.T. (1997) "Vocal tract length and formant frequency dispersion correlate with body size in rhesus macaques." J. Acoust. Soc. Am. 102, 1213 – 1222. (\doi{10.1121/1.421048})
 #'
 #' Boersma P., van Heuven V. (2001). Praat, a system for doing phonetics by computer. Glot. Int., 5(9/10), 341–347. (\url{https://www.fon.hum.uva.nl/paul/papers/speakUnspeakPraat_glot2001.pdf})
 #'
-#' Ellis DPW (2005). “PLP and RASTA (and MFCC, and inversion) in Matlab.” Online web resource. (\url{https://www.ee.columbia.edu/~dpwe/resources/matlab/rastamat/})
+#' Ellis DPW (2005). “PLP and RASTA (and MFCC, and inversion) in Matlab.” Online web resource.
 #'
 #' Puts, D.A., Apicella, C.L., Cardenas, R.A. (2012) "Masculine voices signal men's threat potential in forager and industrial societies." Proc. R. Soc. B Biol. Sci. 279, 601–609. (\doi{10.1098/rspb.2011.0829})
 #' @examples
@@ -68,10 +75,7 @@
 #' table(basename(M3$wav_path))
 #' @export
 extract_features <- function(x,
-                             features = c('f0', 'fmt',        # F0 and formants
-                                          'rf', 'rpf', 'rcf', # Formant removals
-                                          'rfc',              # (R)e(F)lection (C)oefficients
-                                          'mfcc'),            # (M)el (Frequency (C)epstral (C)oefficients
+                             features = c('f0', 'fmt', 'gain'), # F0, formants and gain
                              filesRange = NULL,
                              sex = 'u',
                              windowShift = 10,
@@ -90,7 +94,7 @@ extract_features <- function(x,
                              freq = 44100,
                              round.to = NULL,
                              verbose = FALSE,
-                             pycall = '~/miniconda3/envs/pyvoice38/bin/python3.8'){
+                             pycall = '~/miniconda3/envs/pyvoice/bin/python'){
 
   # time processing
   pt0 <- proc.time()
