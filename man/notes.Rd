@@ -32,7 +32,7 @@ notes(c(220,440,880), method = 'octave')
 notes(c(220,440,880), method = 'midi')
 }
 \references{
-\url{https://gist.github.com/nvictor/7b4ab7070e210bc1306356f037226dd9}
+\url{https://en.wikipedia.org/wiki/Scientific_pitch_notation#Table_of_note_frequencies}
 }
 \seealso{
 \code{notes_freq}

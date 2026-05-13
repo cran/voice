@@ -1,8 +1,32 @@
-## version 0.5.3
+## version 0.5.5
 
 ---
 
 ### NEWS.md setup
+
+
+
+**Version 0.5.7 2026-MM-DD** (at work)
+- Added [plotly slider](https://plotly.com/r/range-slider/) to `piano_plot.R`.
+- Added register to `piano_plot.R`.
+
+
+**Version 0.5.6 2026-05-13**
+
+- Added `#' M <- extract_features(path2wav[1])` to row 12 of `piano_plot.R`.
+- Added scaled `col_gain_cut` by slice.
+- Applied logarithm to `piano_plot.R`, `log = TRUE` and `base = exp(1)`.
+- Added `& exists('rttmDir')` on row 80 at `splitw.R`.
+- Added argument `slice_duration` to `splitw.R`.
+- Omitted `LicenseFile: LICENSE` from row 10 of DESCRIPTION file.
+
+
+**Version 0.5.5 2025-07-14**
+
+- Put back LICENSE file and updated `LicenseFile: LICENSE` @ DESCRIPTION.
+- Put back https://cloud.r-project.org/bin/macosx/ in vignette.
+- Put back https://hf.co/settings/tokens in `diarize.R`.
+
 
 **Version 0.5.4 2025-07-14**
 

@@ -4,12 +4,18 @@
 \alias{piano_plot}
 \title{Piano plot}
 \usage{
-piano_plot(data, num_fmt = 0)
+piano_plot(dat, num_fmt = 0, log_freq = TRUE, base = exp(1), color = "slice")
 }
 \arguments{
-\item{data}{Data frame or tibble containing the desired frequencies to be plotted.}
+\item{dat}{Data frame or tibble containing the desired frequencies to be plotted.}
 
 \item{num_fmt}{Number of the desired formant (includes f0 for simplicity). Default: \code{num_fmt = 0}.}
+
+\item{log_freq}{Logical. Must plot log(frequency)?}
+
+\item{base}{Logarithm base. Default: \code{exp(1)}.}
+
+\item{color}{Must the graph be colored overall or by slice? Default: \code{slice}.}
 }
 \description{
 Piano plot showing the notes in Scientific Pitch Notation.
@@ -20,9 +26,9 @@ library(voice)
 path2wav <- list.files(system.file('extdata', package = 'wrassp'),
 pattern = glob2rx('*.wav'), full.names = TRUE)
 # Media dataset
-M <- extract_features(path2wav)
+M <- extract_features(path2wav[1])
 piano_plot(M, 0)
-piano_plot(M, 0:2)
+piano_plot(M, 0, color = 'overall')
 }
 \references{
 https://en.wikipedia.org/wiki/12_equal_temperament

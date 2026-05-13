@@ -6,6 +6,7 @@
 \usage{
 splitw(
   fromWav,
+  slice_duration = NULL,
   fromRttm = NULL,
   toSplit = NULL,
   autoDir = FALSE,
@@ -19,6 +20,8 @@ splitw(
 }
 \arguments{
 \item{fromWav}{Either WAV file or directory containing WAV files.}
+
+\item{slice_duration}{The slices duration in seconds. Default: \code{NULL}, so RTTM file(s) must be given.}
 
 \item{fromRttm}{Either RTTM file or directory containing RTTM files. Default: \code{NULL}.}
 
@@ -51,6 +54,7 @@ When \code{autoDir = TRUE}, the following directories are created: \code{'../mp3
 \dontrun{
 library(voice)
 
+# Using RTTM files as refernece
 urlWav <- 'https://raw.githubusercontent.com/filipezabala/voiceAudios/main/wav/sherlock0.wav'
 destWav <- paste0(tempdir(), '/sherlock0.wav')
 download.file(urlWav, destfile = destWav)
@@ -61,9 +65,15 @@ download.file(urlRttm, destfile = destRttm)
 
 splitDir <- paste0(tempdir(), '/split')
 dir.create(splitDir)
-splitw(destWav, fromRttm = destRttm, toSplit = splitDir)
 
+# Splitting via RTTM
+splitw(destWav, fromRttm = destRttm, toSplit = splitDir)
 dir(splitDir)
+
+# Splitting with slice_duration of 5 seconds
+splitw(destWav, slice_duration = 5, toSplit = splitDir)
+splitw(destWav, slice_duration = 2, toSplit = splitDir)
+
 }
 }
 \seealso{

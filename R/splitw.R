@@ -1,6 +1,7 @@
 #' Split Wave
 #'
 #' @description Split WAV files either in \code{fromWav} directory or using (same names) RTTM files/subdirectories as guidance.
+#' @param slice_duration The slices duration in seconds. Default: \code{NULL}, so RTTM file(s) must be given.
 #' @param fromWav Either WAV file or directory containing WAV files.
 #' @param fromRttm Either RTTM file or directory containing RTTM files. Default: \code{NULL}.
 #' @param toSplit A directory to write generated files. Default: \code{NULL}.
@@ -17,6 +18,7 @@
 #' \dontrun{
 #' library(voice)
 #'
+#' # Using RTTM files as refernece
 #' urlWav <- 'https://raw.githubusercontent.com/filipezabala/voiceAudios/main/wav/sherlock0.wav'
 #' destWav <- paste0(tempdir(), '/sherlock0.wav')
 #' download.file(urlWav, destfile = destWav)
@@ -27,13 +29,20 @@
 #'
 #' splitDir <- paste0(tempdir(), '/split')
 #' dir.create(splitDir)
-#' splitw(destWav, fromRttm = destRttm, toSplit = splitDir)
 #'
+#' # Splitting via RTTM
+#' splitw(destWav, fromRttm = destRttm, toSplit = splitDir)
 #' dir(splitDir)
+#'
+#' # Splitting with slice_duration of 5 seconds
+#' splitw(destWav, slice_duration = 5, toSplit = splitDir)
+#' splitw(destWav, slice_duration = 2, toSplit = splitDir)
+#'
 #' }
 #' @seealso \code{voice::diarize}
 #' @export
 splitw <- function(fromWav,
+                   slice_duration = NULL,
                    fromRttm = NULL,
                    toSplit = NULL,
                    autoDir = FALSE,
@@ -46,6 +55,10 @@ splitw <- function(fromWav,
 
   # time processing
   pt0 <- proc.time()
+
+  if(is.null(slice_duration) & is.null(fromRttm)){
+    stop('Either splitby or fromRttm must be given!')
+  }
 
   # checking if is either a file or a directory
   if(utils::file_test('-f', fromWav)){
@@ -70,18 +83,20 @@ splitw <- function(fromWav,
     ifelse(!dir.exists(mxmlDir), dir.create(mxmlDir), 'Directory exists!')
   }
 
-  if(is.null(fromRttm)){
+  if(is.null(fromRttm) & exists('rttmDir')){
     fromRttm <- rttmDir
   }
 
   # rttm
-  if(utils::file_test('-f', fromRttm)){
-    rttmDir <- dirname(fromRttm)
-    rttmFiles <- fromRttm
-  } else{
-    rttmDir <- fromRttm
-    rttmFiles <- list.files(fromRttm, pattern = '[[:punct:]][rR][tT][tT][mM]$',
-                            full.names = full.names, recursive = recursive)
+  if(!is.null(fromRttm)){
+    if(utils::file_test('-f', fromRttm)){
+      rttmDir <- dirname(fromRttm)
+      rttmFiles <- fromRttm
+    } else{
+      rttmDir <- fromRttm
+      rttmFiles <- list.files(fromRttm, pattern = '[[:punct:]][rR][tT][tT][mM]$',
+                              full.names = full.names, recursive = recursive)
+    }
   }
 
   # split
@@ -114,28 +129,41 @@ splitw <- function(fromWav,
   # reading WAV
   audio <- sapply(wavFiles, tuneR::readWave)
 
-  # reading RTTM
-  rttm <- lapply(rttmFiles, utils::read.table)
-  colnames <- c('type','file','chnl','tbeg','tdur',
-                'ortho','stype','name','conf','slat')
-  rttm <- lapply(rttm, stats::setNames, colnames)
+  if(!is.null(fromRttm)){
+    # reading RTTM
+    rttm <- lapply(rttmFiles, utils::read.table)
+    colnames <- c('type','file','chnl','tbeg','tdur',
+                  'ortho','stype','name','conf','slat')
+    rttm <- lapply(rttm, stats::setNames, colnames)
 
-  # silence.gap
-  keep.row <- function(x){
-    kr <- x[x$tdur > silence.gap,]
-    return(kr)
-  }
-  rttm <- lapply(rttm, keep.row)
+    # silence.gap
+    keep.row <- function(x){
+      kr <- x[x$tdur > silence.gap,]
+      return(kr)
+    }
+    rttm <- lapply(rttm, keep.row)
 
   # time beginning, duration and ending
   tbeg <- lapply(rttm, voice::get_tbeg)
   tdur <- lapply(rttm, voice::get_tdur)
   tend <- Map('+', tbeg, tdur)
+  } else{
+    # getting duration in seconds
+    audio_dur <- sapply(audio, voice::get_dur)
 
-  # # tests
-  # sapply(tdur, summary)
-  # sapply(tdur, length)
-  # sapply(tdur, quantile, prob = seq(0,1,.01))
+    # splitby is a scalar
+    if(length(slice_duration) == 1){
+      tbeg <- vector('list', 1)
+      tbeg[[1]] <- seq(0, audio_dur, slice_duration)
+      tdur <- vector('list', 1)
+      tdur[[1]] <- c(rep(slice_duration, length(tbeg[[1]])-1),
+                     audio_dur%%slice_duration)
+      tend <- Map('+', tbeg, tdur)
+    }
+    # else{ # splitby is a vector
+    #
+    # }
+  }
 
   # defining break points
   breaks <- Map('c', tbeg, tend)
@@ -145,12 +173,6 @@ splitw <- function(fromWav,
 
   # audio information
   freq <- sapply(audio, voice::get_samp.rate)
-  # bit <- sapply(audio, voice::get_bit)
-  # left <- lapply(audio, voice::get_left)
-  # right <- lapply(audio, voice::get_right)
-  # totlen <- sapply(audio, length)
-  # totsec <- totlen/freq
-
 
   # split.audio - Do parallel/vectorized?
   split.audio <- function(x, index, breaks, freq){
@@ -184,7 +206,7 @@ splitw <- function(fromWav,
   if(output == 'wave'){
     fileName <- do.call(rbind, strsplit(basename(wavFiles), '[.]'))
     fileNameSplit <- vector('list', length(nbreaks))
-    k <- 0
+    # k <- 0
     audioWave <- vector('list', sum(nbreaks)/2)
     for(i in 1:length(nbreaks)){
       for(j in (nbreaks[i]/2)){
